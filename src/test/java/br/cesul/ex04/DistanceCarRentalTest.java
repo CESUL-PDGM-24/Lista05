@@ -33,6 +33,6 @@ public class DistanceCarRentalTest {
                 true,
                 1000d);
 
-        carRental.finish();
+        assertThrows(IllegalStateException.class, () -> carRental.finish());
     }
 }

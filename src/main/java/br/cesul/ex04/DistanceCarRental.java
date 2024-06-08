@@ -27,7 +27,16 @@ public class DistanceCarRental extends CarRental{
             total += exceeded * OVERUSE_FEE;
         }
 
+        if (insurance) {
+            total *= INSURANCE_FEE;
+        }
+
         return total;
+    }
+
+    @Override
+    protected void finish() {
+        throw new IllegalStateException();
     }
 
     public void finish(double usedDistance) {
