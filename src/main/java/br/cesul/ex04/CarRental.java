@@ -1,6 +1,7 @@
 package br.cesul.ex04;
 
 import br.cesul.ex04.exception.UnfinishedRentalException;
+import br.cesul.ex04.utils.DateUtils;
 
 import java.time.LocalDate;
 
@@ -17,8 +18,13 @@ public abstract class CarRental {
     private RentalStatus status;
 
     protected LocalDate startDate;
+    protected LocalDate finishDate;
 
-    public CarRental(String plate, String customer, String license, Double price, boolean insurance) {
+    protected DateUtils dateUtils;
+
+    public CarRental(DateUtils dateUtils, String plate, String customer, String license, Double price, boolean insurance) {
+        this.dateUtils = dateUtils;
+
         this.plate = plate;
         this.customer = customer;
         this.license = license;
@@ -26,13 +32,24 @@ public abstract class CarRental {
         this.insurance = insurance;
 
         this.status = RentalStatus.IN_PROGRESS;
-        this.startDate = LocalDate.now();
+        this.startDate = dateUtils.getToday();
     }
 
     public abstract double getRentalTotal() throws UnfinishedRentalException;
 
     protected void finish() {
         this.status = RentalStatus.FINISHED;
+        this.finishDate = dateUtils.getToday();
+    }
+
+    protected void validateFinishedRental() throws UnfinishedRentalException{
+        if (status != RentalStatus.FINISHED) {
+            throw new UnfinishedRentalException();
+        }
+    }
+
+    protected double getInsuranceForRental(double rentalValue) {
+        return insurance ? rentalValue * INSURANCE_FEE : rentalValue;
     }
 
     public String getPlate() {
@@ -57,5 +74,9 @@ public abstract class CarRental {
 
     public RentalStatus getStatus() {
         return status;
+    }
+
+    public LocalDate getFinishDate() {
+        return finishDate;
     }
 }

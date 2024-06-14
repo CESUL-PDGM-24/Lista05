@@ -1,6 +1,7 @@
 package br.cesul.ex04;
 
 import br.cesul.ex04.exception.UnfinishedRentalException;
+import br.cesul.ex04.utils.DateUtils;
 
 public class DistanceCarRental extends CarRental{
 
@@ -9,16 +10,14 @@ public class DistanceCarRental extends CarRental{
 
     private Double usedDistance;
 
-    public DistanceCarRental(String plate, String customer, String license, Double price, boolean insurance, Double hiredDistance) {
-        super(plate, customer, license, price, insurance);
+    public DistanceCarRental(DateUtils dateUtils, String plate, String customer, String license, Double price, boolean insurance, Double hiredDistance) {
+        super(dateUtils, plate, customer, license, price, insurance);
         this.hiredDistance = hiredDistance;
     }
 
     @Override
     public double getRentalTotal() throws UnfinishedRentalException {
-        if (getStatus() != RentalStatus.FINISHED) {
-            throw new UnfinishedRentalException();
-        }
+        validateFinishedRental();
 
         var total = hiredDistance * price;
 
@@ -27,11 +26,7 @@ public class DistanceCarRental extends CarRental{
             total += exceeded * OVERUSE_FEE;
         }
 
-        if (insurance) {
-            total *= INSURANCE_FEE;
-        }
-
-        return total;
+        return getInsuranceForRental(total);
     }
 
     @Override
